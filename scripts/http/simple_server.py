@@ -4,7 +4,6 @@
 
 import SimpleHTTPServer
 import SocketServer
-import BaseHTTPServer
 import os
 
 HOST = "localhost"
