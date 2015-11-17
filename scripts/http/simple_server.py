@@ -13,7 +13,7 @@ PORT = 8080
 
 HANDLER = SimpleHTTPServer.SimpleHTTPRequestHandler
 
-os.chdir("C:\~projects\jaz")
+os.chdir("C:\\~projects\\jaz\\test")
 
 httpd = SocketServer.TCPServer((HOST, PORT), HANDLER)
 
