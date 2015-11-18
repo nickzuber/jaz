@@ -53,7 +53,7 @@ a:hover{
 }
 a:active{
     color: #278ADA;
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 /* css utils */
