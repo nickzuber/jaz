@@ -11,7 +11,6 @@ const Transition = function(){
 }
 
 
-
 /**
  * Constuct base object with respective private data
  * @attribute scope which links are to be affected by Jaz

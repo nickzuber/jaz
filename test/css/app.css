@@ -88,33 +88,6 @@ a:active{
     box-sizing: border-box;
 }
 
-.tb-panel{
-    display: block;
-    margin: 0;
-    border: 0;
-    background: #fff;
-    box-shadow: 0 1px 2px rgba(0,0,0,.1);
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.tb-card-has-padding{
-    padding-top: 1px;
-    margin-top: -1px;
-}
-
-.tb-fixed{
-    position: fixed;
-}
-
-.pseudo--link{
-    cursor: pointer;
-}
-
-/*!
- * NAV
- */
-
 .action-panel-nav{
     height: 40px;
     line-height: 40px;
@@ -138,85 +111,6 @@ a:active{
     padding: 0;
 }
 
-.tb-nav-user{
-    background: none;
-    width: 250px;
-    height: 40px;
-    display: inline-block;
-    float: right;
-    clear: right;
-}
-
-.nav-user-profile{
-    display: inline-block;
-    border-radius: 100%;
-    height: 30px;
-    width: 30px;
-    background: #eee;
-    position: absolute;
-    right: 15px;
-    margin-top: 5px;
-}
-
-.user--avatar{
-    background-image: url(https://v.cdn.vine.co/r/avatars/C5D7BD22D71219426232308027392_3efe8214ff7.3.3.jpg);
-    background-size: 100%;
-}
-
-.tb-nav-links{
-    background: none;
-    width: 250px;
-    height: 40px;
-    display: inline-block;
-    float: left;
-    clear: left;
-}
-
-.tb-nav-links a i{
-    transition: all .1s ease-in-out;
-    font-size: 30px;
-    color: rgba(0, 0, 0, 0.27);
-}
-
-.tb-nav-links a i:hover{
-    color: rgba(0, 0, 0, 0.5);
-}
-
-/* links */
-.popular--link{
-    display: inline-block;
-    height: 40px;
-    width: 40px;
-    margin: 0;
-    padding: 0 5px;
-    line-height: 62px; /* jenk positioning */
-    text-align: center;
-}
-
-.explore--link{
-    display: inline-block;
-    height: 40px;
-    width: 40px;
-    margin: 0;
-    padding: 0 5px;
-    line-height: 62px; /* jenk positioning */
-    text-align: center;
-}
-
-.recent--link{
-    display: inline-block;
-    height: 40px;
-    width: 40px;
-    margin: 0;
-    padding: 0 5px;
-    line-height: 62px; /* jenk positioning */
-    text-align: center;
-}
-
-/*!
- * MAIN
- */
-
 .action-panel-main{
     min-height: 1500px;
     width: 570px;
@@ -225,37 +119,6 @@ a:active{
     margin-bottom: 50px;
 }
 
-@media screen and (max-width: 1110px){
-    #tb-home-render{
-        width: 98%;
-    }
-    .action-panel-main{
-        width: 100%;
-    }
-    .action-panel-user{
-        display: none;
-    }
-    .action-panel-explore{
-        display: none;
-    }
-    .action-panel-featured{
-        display: none;
-    }
-    .tb-content-panel{
-        width: 100%;
-    }
-    .tb-nav-links{
-        width: 33%;
-        overflow: auto;
-    }
-    .tb-nav-user{
-        width: 33%;
-        overflow: auto;
-    }
-}
-
-/* posts */
-
 .action-panel-post{
     min-height: 50px;
     width: 100%;
@@ -263,43 +126,4 @@ a:active{
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 20px;
-}
-
-/*!
- * USER
- */
-
-.action-panel-user{
-    min-height: 200px;
-    width: 250px;
-    float: left;
-    clear: left;
-}
-
-/*!
- * EXPLORE
- */
-
-/* the wrapper for .explore */
-.fixed-content-init{
-    float: right;
-    clear: right;
-    width: 250px;
- }
-
-.action-panel-explore{
-    min-height: 300px;
-    width: 250px;
-}
-
-/*!
- * FEATURED
- */
-
-.action-panel-featured{
-    min-height: 300px;
-    width: 250px;
-    margin-top: 225px; /* offset for fixed positioning */
-    float: left;
-    clear: left;
 }
