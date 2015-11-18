@@ -1,0 +1,61 @@
+
+
+.loadIn{
+    animation-name: loadIn;
+    -webkit-animation-name: loadIn;
+    animation-duration: .5s;
+    -webkit-animation-duration: .5s;
+    animation-timing-function: ease;
+    -webkit-animation-timing-function: ease;
+    visibility: visible !important;
+}
+
+@keyframes loadIn{
+    0%{
+        opacity: 0.0;
+        transform: scale(0.0);
+    }
+    100%{
+        opacity: 1.0;
+        transform: scale(1.0);
+    }
+}
+
+@-webkit-keyframes loadIn{
+    0%{
+        opacity: 0.0;
+        transform: scale(0.0);
+    }
+    100%{
+        opacity: 1.0;
+        transform: scale(1.0);
+    } 
+}
+
+.fadeIn{
+    animation-name: fadeIn;
+    -webkit-animation-name: fadeIn;
+    animation-duration: .5s;
+    -webkit-animation-duration: .5s;
+    animation-timing-function: ease;
+    -webkit-animation-timing-function: ease;
+    visibility: visible !important;
+}
+
+@keyframes fadeIn{
+    0%{
+        opacity: 0.0;
+    }
+    100%{
+        opacity: 1.0;
+    }
+}
+
+@-webkit-keyframes fadeIn{
+    0%{
+        opacity: 0.0;
+    }
+    100%{
+        opacity: 1.0;
+    } 
+}
