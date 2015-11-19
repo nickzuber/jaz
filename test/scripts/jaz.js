@@ -5,35 +5,47 @@
 
 
 
-// ########################################################
-// Event Object
+// 
+// Status Object
 // ============
 // Handles the state of the program at any given moment.
 // It's purpose is to avoid overwhelming the program with
 // input and commands; this simply discards extraneous 
 // commands while the program is running and does not queue 
 // them for later use.
-// ########################################################
+// 
 
 /**
- * Event object controls the current state of the program.
+ * Status object controls the current state of the program.
  * @attribute {inProcess} current state (true if event is firing)
  * @attribute {loadSuccess} returns true if page load succeeded
  */
-const Event = {
+const Status = {
   inProcess: false,
   loadSuccess: false
 }
 
 
 
-// ################################################
+
+
+
+
+
+
+
+
+
+
+
+
+// 
 // Scope Object
 // ============
 // Defines the scope of the Jaz program and handles
 // any sort of maintenance with this particular
 // area of the program.
-// ################################################
+// 
 
 /**
  * Scope object defines the scope of the program, in the sense of
@@ -43,6 +55,14 @@ const Event = {
 const Scope = function(scope){
   if(typeof scope != 'string'){
     throw new Error("Scope objects must be constructed with a string.");
+  }
+
+  // Initialize scope
+  this._scope = undefined;
+
+  // Check for wildcard flag
+  if(scope === '*'){
+    this._scope = 'a';
   }
 
 }
@@ -57,7 +77,21 @@ Scope.prototype.identifier = function(){
 
 
 
-// ###########################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 
 // Intermission Object
 // ===================
 // Specifies and intermission function that is to fire while
@@ -66,7 +100,7 @@ Scope.prototype.identifier = function(){
 // and a callback to that function to execute when the page
 // has finished rendering and loading, and the intermission
 // function has finished.
-// ###########################################################
+// 
 
 /**
  * Intermission constructor takes a simple object containing anywhere from
@@ -82,9 +116,41 @@ const Intermission = function(functionsObject){
   if(typeof functionsObject != 'object'){
     throw new Error("Intermission objects must be constructed with an basic object containing the intermission function and (optional) a callback function.");
   }
-  
+
+  // Assume we have an object containing two attributes defined as functions
+  // labeled 'intermission' and 'callback'
+  try{
+    const intermission = functionsObject.intermission;
+    const callback = functionsObject.callback;
+  }
+  catch(e){
+    throw new Error("Error when defining intermission and callback: " + e.message);
+  }
+
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+// 
+// Jaz Object
+// ==========
+// Specifies and intermission function that is to fire while
+// the program is changing states. This consists of a function
+// that will run while the new page is rendering and loading,
+// and a callback to that function to execute when the page
+// has finished rendering and loading, and the intermission
+// function has finished.
+// 
 
 /**
  * Constuct base object with respective private data
@@ -93,6 +159,11 @@ const Intermission = function(functionsObject){
  *                         and a callback for when the page finishes rendering.
  */
 const Jaz = function(scope, intermission){
+  this.scope = undefined;
+  this.intermission = undefined;
+};
+
+Jaz.prototype.config = function(scope, intermission){
   this.scope = new Scope(scope);
   this.intermission = new Intermission(intermission);
 };
@@ -109,3 +180,5 @@ Jaz.prototype.remoteBlockRouting = function(){
     throw new Error("Error: undefined or invalid scope.");
   }
 }
+
+window.Jaz = Jaz;

@@ -1,0 +1,2 @@
+
+var J = new Jaz();
