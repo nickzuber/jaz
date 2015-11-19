@@ -109,23 +109,25 @@ Scope.prototype.identifier = function(){
  * @attribute {_intermission} function, to execute when new page is rendering
  */
 const Intermission = function(functionsObject){
+	console.log(functionsObject)
   if(typeof functionsObject == 'undefined' || !functionsObject){
     console.warn("Intermission object is undefined; assumed no Intermission is requested.");
+    this.loading = null;
     return;
   }
   if(typeof functionsObject != 'object'){
-    throw new Error("Intermission objects must be constructed with an basic object containing the intermission function and (optional) a callback function.");
+    throw new Error("Intermission objects must be constructed with an basic object containing the loading function and (optional) a callback function.");
   }
 
   // Assume we have an object containing two attributes defined as functions
-  // labeled 'intermission' and 'callback'
-  try{
-    const intermission = functionsObject.intermission;
-    const callback = functionsObject.callback;
+  // labelled 'loading' and 'callback'
+  const loading = functionsObject.loading;
+  const callback = functionsObject.callback;
+  if(typeof callback =='undefined' || typeof loading == 'undefined'){
+    throw new Error("Error when defining intermission and callback.");
   }
-  catch(e){
-    throw new Error("Error when defining intermission and callback: " + e.message);
-  }
+  
+  // 
 
 }
 
@@ -153,17 +155,38 @@ const Intermission = function(functionsObject){
 // 
 
 /**
- * Constuct base object with respective private data
+ * Construct base object with respective private data
  * @attribute {scope} which links are to be affected by Jaz
  * @attribute {transition} object, holds functions that executes while new page is rendering
  *                         and a callback for when the page finishes rendering.
  */
-const Jaz = function(scope, intermission){
+const Jaz = function(){
   this.scope = undefined;
   this.intermission = undefined;
 };
 
-Jaz.prototype.config = function(scope, intermission){
+/**
+ * Construct the Jaz object
+ * @param {config} object, holds configuration settings of scope and intermission
+ */
+Jaz.prototype.config = function(config){
+  if(typeof config != 'object' || !config){
+    throw new Error("Configuration settings must be an object.");
+  }
+  // Assume our config object is defined with two attributes
+  try{
+    const scope = config.scope;
+	const intermission = config.intermission;
+  }
+  catch(e){
+    throw new Error("Configuration object must be constructed with a string, and an object of functions: " + e.message);
+  }
+  
+  // Confirm intermission is a simple object
+  if(typeof intermission != 'object'){
+    throw new Error("Intermission must be defined as a simple object.");
+  }
+  
   this.scope = new Scope(scope);
   this.intermission = new Intermission(intermission);
 };
