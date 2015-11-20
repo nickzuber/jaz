@@ -37,8 +37,22 @@ define([], function(){
     
     // 
 
+    this.loading = loading;
+    this.callback = callback;
+
   } 
 
+  Intermission.prototype.fire = function(){
+    if(typeof this.loading == 'function' && this.loading){
+      this.loading();
+    }
+  }
+
+  Intermission.prototype.done = function(){
+    if(typeof this.callback == 'function' && this.callback){
+      this.callback();
+    }
+  }
 
   // return module - will remove in production
   return Intermission;

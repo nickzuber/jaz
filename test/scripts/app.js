@@ -4,15 +4,23 @@ require(['Jaz'], function(Jaz){
   var J = new Jaz();
 
   function loadingFunction(){
-    console.log('loading...');
+    
+    var waiting = document.createElement('div');
+    waiting.className = 'waiting';
+    document.body.appendChild(waiting);
+    
+    //document.querySelectorAll('.tb-content-panel')[1].style.opacity = 0;
   }
 
   function loadedFunction(){
-    console.log('done');
+    
+    document.querySelector('.waiting').remove();
+    
+    //document.querySelectorAll('.tb-content-panel')[1].style.opacity = 1;
   }
 
   J.config({
-    scope: "a",
+    scope: "*",
     intermission: {
       loading: loadingFunction,
       callback: loadedFunction

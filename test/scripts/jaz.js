@@ -23,8 +23,10 @@ define(['Status', 'Scope', 'Intermission'], function(Status, Scope, Intermission
    * and a callback for when the page finishes rendering.
    */
   const Jaz = function(){
+    this.status = Status;
     this.scope = undefined;
     this.intermission = undefined;
+    this.targetArea = undefined;
   };
 
   /**
@@ -55,11 +57,87 @@ define(['Status', 'Scope', 'Intermission'], function(Status, Scope, Intermission
    * property.
    */
   Jaz.prototype.remoteBlockRouting = function(){
-    if(typeof this.scope == 'object' && this.scope){
-      console.log('invoked');
-    }else{
+    if(typeof this.scope != 'object' || !this.scope){
       throw new Error("Error: undefined or invalid scope.");
     }
+
+    // Initialize container for links within scope
+    var encapsulatedLinks = [];
+
+    // Grab all links in scope
+    for(var i=0; i<document.querySelectorAll(this.scope.identifier()).length; i++){
+      encapsulatedLinks.push(document.querySelectorAll(this.scope.identifier())[i]);
+    }
+
+    // Attached event to links in scope that block default routing
+    // and attach custom Jaz routing method
+    encapsulatedLinks.map(function(a){
+      var target = a.href;
+      a.addEventListener("click", function(e){
+        this.reconfigureRouting(e, target);
+      }.bind(this));
+    }.bind(this));
+
+  }
+
+  /**
+   * The event that is attatched to a link, preventing it from its default
+   * routing and adding the custom Jaz routing method.
+   * @param {e} object, reference to the link that is clicked
+   */
+  Jaz.prototype.reconfigureRouting = function(e, target){
+    e.preventDefault();
+
+    // If Jaz is already routing, ignore other requests
+    if(this.status.inProcess){
+      return;
+    }
+
+    // Update status
+    this.status.inProcess = true;
+
+    // Fire intermission function
+    this.intermission.fire();
+
+    // href string value
+    var request;
+
+    console.log('Route path: ' + target);
+
+    if(window.XMLHttpRequest){
+      request = new XMLHttpRequest();
+      console.log('Request created.');
+    }else{
+      request = new ActiveXObject("Microsoft.XMLHTTP");
+      console.log('Request created.');
+    }
+
+    // Open page
+    request.open("GET", target, true);
+
+    request.onreadystatechange = function(){
+      if(request.readyState == XMLHttpRequest.DONE){
+        if(request.status == 200){
+          console.log('Request success.');
+          
+          parseHTML(request.responseText);
+
+          // Fire callback
+          this.intermission.done();
+
+          // Reset link event listeners to compensate for newly loaded links
+          this.remoteBlockRouting();
+
+          // Reset status
+          this.status.inProcess = false;
+        }
+        else{
+          throw new Error("AJAX load failed: invalid status returned: " + request.status);
+        }
+      }
+    }.bind(this);
+
+    request.send();
 
   }
 
@@ -68,7 +146,25 @@ define(['Status', 'Scope', 'Intermission'], function(Status, Scope, Intermission
    * to page requests.
    */
   Jaz.prototype.invoke = function(){
-    console.log('invoke invoked (lol)');
+    console.warn('Jaz is ready');
+    this.remoteBlockRouting();
+  }
+
+
+  /**
+   * Create virtual DOM, load in raw HTML, parsed to extract 
+   * target area data and return that data.
+   * @param {rawHTML} string, HTML in the form of a string
+   * @return target area data
+   */
+  function parseHTML(rawHTML){
+    const DOM = document.createElement('html');
+    DOM.innerHTML = rawHTML;
+
+    // Extract targetArea
+    const newContent = DOM.querySelectorAll('.tb-content-panel')[1];
+
+    document.querySelectorAll('.tb-content-panel')[1].innerHTML = newContent.innerHTML;
   }
 
 

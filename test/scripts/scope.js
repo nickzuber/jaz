@@ -44,12 +44,12 @@ define([], function(){
 
     // Scope defines a class or id
     if(scope.match(validClassOrID)){
-      this._scope = scope;
+      this._scope = "a" + scope;
     }
 
     // Scope defines a data-* attribute name
     else if(scope.match(validDataAttribute)){
-      this._scope = "[" + scope + "]";
+      this._scope = "a[" + scope + "]";
     }
 
     // Invalid scope

@@ -13,11 +13,9 @@ define([], function(){
   /**
    * Status object controls the current state of the program.
    * @attribute {inProcess} current state (true if event is firing)
-   * @attribute {loadSuccess} returns true if page load succeeded
    */
   const Status = {
-    inProcess: false,
-    loadSuccess: false
+    inProcess: false
   }
 
   // return module - will remove in production
