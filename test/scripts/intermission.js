@@ -21,6 +21,7 @@ define([], function(){
     if(typeof functionsObject == 'undefined' || !functionsObject){
       console.warn("Intermission object is undefined; assumed no Intermission is requested.");
       this.loading = null;
+      this.callback = null;
       return;
     }
     if(typeof functionsObject != 'object'){
@@ -31,8 +32,8 @@ define([], function(){
     // labelled 'loading' and 'callback'
     const loading = functionsObject.loading;
     const callback = functionsObject.callback;
-    if(typeof callback =='undefined' || typeof loading == 'undefined'){
-      throw new Error("Error when defining intermission and callback.");
+    if(typeof callback != 'function' || typeof loading != 'function'){
+      throw new Error("Error when defining intermission and callback.\nMake sure they are both defined as valid functions.");
     }
     
     // 

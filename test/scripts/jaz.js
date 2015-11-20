@@ -86,6 +86,7 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
    * The event that is attatched to a link, preventing it from its default
    * routing and adding the custom Jaz routing method.
    * @param {e} object, reference to the link that is clicked
+   * @param {target} string, the address of our target destination
    */
   Jaz.prototype.reconfigureRouting = function(e, target){
     e.preventDefault();
@@ -114,7 +115,7 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
       console.log('Request created.');
     }
 
-    // Open page
+    // Open request
     request.open("GET", target, true);
 
     request.onreadystatechange = function(){
@@ -138,12 +139,20 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
           this.status.inProcess = false;
         }
         else{
+          window.location = target;
           throw new Error("AJAX load failed: invalid status returned: " + request.status);
         }
       }
     }.bind(this);
 
-    request.send();
+    // Attempt to invoke request
+    try{
+      request.send();
+    }
+    catch(e){
+      console.warn("Error: Connection refused.\nFall back initiated.");
+      window.location = target;
+    }
 
   }
 

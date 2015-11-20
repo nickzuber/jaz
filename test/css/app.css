@@ -109,7 +109,7 @@ a:active{
     height: 100%;
     margin: 0 auto;
     padding: 0;
-    transition: opacity 3s ease;
+    transition: opacity 2s ease;
 }
 
 .action-panel-main{
