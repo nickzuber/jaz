@@ -1,20 +1,24 @@
 
-var J = new Jaz();
+require(['Jaz'], function(Jaz){
 
-function loadingFunction(){
-  console.log('loading...');
-}
+  var J = new Jaz();
 
-function loadedFunction(){
-  console.log('done');
-}
-
-J.config({
-  scope: "a",
-  intermission: {
-    loading: loadingFunction,
-    callback: loadedFunction
+  function loadingFunction(){
+    console.log('loading...');
   }
-});
 
-J.invoke();
+  function loadedFunction(){
+    console.log('done');
+  }
+
+  J.config({
+    scope: "a",
+    intermission: {
+      loading: loadingFunction,
+      callback: loadedFunction
+    }
+  });
+
+  J.invoke();
+
+});

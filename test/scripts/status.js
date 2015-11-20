@@ -1,0 +1,26 @@
+// 
+// Status Object
+// ============
+// Handles the state of the program at any given moment.
+// It's purpose is to avoid overwhelming the program with
+// input and commands; this simply discards extraneous 
+// commands while the program is running and does not queue 
+// them for later use.
+// 
+
+define([], function(){
+
+  /**
+   * Status object controls the current state of the program.
+   * @attribute {inProcess} current state (true if event is firing)
+   * @attribute {loadSuccess} returns true if page load succeeded
+   */
+  const Status = {
+    inProcess: false,
+    loadSuccess: false
+  }
+
+  // return module - will remove in production
+  return Status;
+
+});
