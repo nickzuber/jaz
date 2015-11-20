@@ -46,6 +46,16 @@ const Status = {
 // any sort of maintenance with this particular
 // area of the program.
 // 
+// Scope can be defined as the following:
+// 
+//  *         |    all links
+//  data-*    |    a data attribute with its value (value is ignored)
+//  .*        |    a certain class name
+//  #*        |    a certain id name
+// 
+// The scope will encapulate all anchor elements with the specified
+// property.
+// 
 
 /**
  * Scope object defines the scope of the program, in the sense of
@@ -62,7 +72,29 @@ const Scope = function(scope){
 
   // Check for wildcard flag
   if(scope === '*'){
+    // 'a' encapsulates every link on a page
     this._scope = 'a';
+    return;
+  }
+
+  // Check if scope string is of a valid format
+  const validClassOrID = /(^(\.|#)[a-zA-Z](\w+)?)/g;
+  const validDataAttribute = /(data-[a-zA-Z](\w+)?)/g;
+
+
+  // Scope defines a class or id
+  if(scope.match(validClassOrID)){
+    this._scope = scope;
+  }
+
+  // Scope defines a data-* attribute name
+  else if(scope.match(validDataAttribute)){
+    this._scope = "[" + scope + "]";
+  }
+
+  // Invalid scope
+  else{
+    throw new Error("Scope string is invalid.");
   }
 
 }
@@ -109,14 +141,13 @@ Scope.prototype.identifier = function(){
  * @attribute {_intermission} function, to execute when new page is rendering
  */
 const Intermission = function(functionsObject){
-	console.log(functionsObject)
   if(typeof functionsObject == 'undefined' || !functionsObject){
     console.warn("Intermission object is undefined; assumed no Intermission is requested.");
     this.loading = null;
     return;
   }
   if(typeof functionsObject != 'object'){
-    throw new Error("Intermission objects must be constructed with an basic object containing the loading function and (optional) a callback function.");
+    throw new Error("Intermission objects must be constructed with an basic object containing the loading function and a callback function.");
   }
 
   // Assume we have an object containing two attributes defined as functions
@@ -158,7 +189,7 @@ const Intermission = function(functionsObject){
  * Construct base object with respective private data
  * @attribute {scope} which links are to be affected by Jaz
  * @attribute {transition} object, holds functions that executes while new page is rendering
- *                         and a callback for when the page finishes rendering.
+ * and a callback for when the page finishes rendering.
  */
 const Jaz = function(){
   this.scope = undefined;
@@ -173,18 +204,14 @@ Jaz.prototype.config = function(config){
   if(typeof config != 'object' || !config){
     throw new Error("Configuration settings must be an object.");
   }
+
   // Assume our config object is defined with two attributes
   try{
     const scope = config.scope;
-	const intermission = config.intermission;
+	  const intermission = config.intermission;
   }
   catch(e){
     throw new Error("Configuration object must be constructed with a string, and an object of functions: " + e.message);
-  }
-  
-  // Confirm intermission is a simple object
-  if(typeof intermission != 'object'){
-    throw new Error("Intermission must be defined as a simple object.");
   }
   
   this.scope = new Scope(scope);
@@ -202,6 +229,19 @@ Jaz.prototype.remoteBlockRouting = function(){
   }else{
     throw new Error("Error: undefined or invalid scope.");
   }
+
 }
 
+/**
+ * Begin the process of rerouting links within the scope and listening
+ * to page requests.
+ */
+Jaz.prototype.invoke = function(){
+
+}
+
+
+
+
+// Place Jaz onto the global scope
 window.Jaz = Jaz;
