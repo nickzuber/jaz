@@ -14,7 +14,7 @@
 // function has finished.
 //
 
-define(['Status', 'Scope', 'Intermission'], function(Status, Scope, Intermission){ 
+define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, Intermission, Target){
 
   /**
    * Construct base object with respective private data
@@ -42,6 +42,7 @@ define(['Status', 'Scope', 'Intermission'], function(Status, Scope, Intermission
     try{
       const scope = config.scope;
       const intermission = config.intermission;
+      const targetArea = config.targetArea;
     }
     catch(e){
       throw new Error("Configuration object must be constructed with a string, and an object of functions: " + e.message);
@@ -49,6 +50,7 @@ define(['Status', 'Scope', 'Intermission'], function(Status, Scope, Intermission
     
     this.scope = new Scope(scope);
     this.intermission = new Intermission(intermission);
+    this.targetArea = new Target(targetArea);
   };
 
   /**
@@ -120,7 +122,11 @@ define(['Status', 'Scope', 'Intermission'], function(Status, Scope, Intermission
         if(request.status == 200){
           console.log('Request success.');
           
-          parseHTML(request.responseText);
+          // Parse loaded HTML and repopulate targetArea
+          this.parseHTML(request.responseText);
+
+          // Update current page state (@via history API)
+          window.history.pushState({}, '', target);
 
           // Fire callback
           this.intermission.done();
@@ -145,11 +151,13 @@ define(['Status', 'Scope', 'Intermission'], function(Status, Scope, Intermission
    * Begin the process of rerouting links within the scope and listening
    * to page requests.
    */
-  Jaz.prototype.invoke = function(){
-    console.warn('Jaz is ready');
+  Jaz.prototype.listen = function(){
+    console.warn('Jaz is listening...');
+    // Push currently configured instance of Jaz object onto global scope.
+    // This is needed for handling popstate changes (user going back/forward)
+    window.Jaz_Reference = this;
     this.remoteBlockRouting();
   }
-
 
   /**
    * Create virtual DOM, load in raw HTML, parsed to extract 
@@ -157,18 +165,32 @@ define(['Status', 'Scope', 'Intermission'], function(Status, Scope, Intermission
    * @param {rawHTML} string, HTML in the form of a string
    * @return target area data
    */
-  function parseHTML(rawHTML){
+  Jaz.prototype.parseHTML = function(rawHTML){
+    // Construct a virtual DOM to contain and parse our raw HTML
     const DOM = document.createElement('html');
     DOM.innerHTML = rawHTML;
 
     // Extract targetArea
-    const newContent = DOM.querySelectorAll('.tb-content-panel')[1];
+    const renderedData = DOM.querySelector(this.targetArea.identifier());
 
-    document.querySelectorAll('.tb-content-panel')[1].innerHTML = newContent.innerHTML;
+    // Inject targetArea with new content
+    document.querySelector(this.targetArea.identifier()).innerHTML = renderedData.innerHTML;
   }
 
+  /**
+   * Handle user pressing back button if Jaz is active.
+   */
+  window.onpopstate = function(e){
+    if(typeof window.Jaz_Reference == 'object' && window.Jaz_Reference){
+      if(e.state){
+        var target = window.location.href || document.URL;
+        Jaz_Reference.reconfigureRouting(e, target);
+      }
+    }
+  };
 
-  // Place Jaz onto the global scope
+
+  // Push Jaz onto the global scope
   window.Jaz = Jaz;
 
   // return module - will remove in production

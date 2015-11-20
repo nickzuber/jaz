@@ -44,11 +44,19 @@ define([], function(){
 
     // Scope defines a class or id
     if(scope.match(validClassOrID)){
+      // check if identifier exists
+      if(!document.querySelector("a" + scope)){
+        throw new Error("Scope identifier was not found in the scope of the web page: " + scope + "\nCheck to see you're attempting to reference the correct element.");
+      }
       this._scope = "a" + scope;
     }
 
     // Scope defines a data-* attribute name
     else if(scope.match(validDataAttribute)){
+      // check if identifier exists
+      if(!document.querySelector("a[" + scope + "]")){
+        throw new Error("Scope identifier was not found in the scope of the web page: " + scope + "\nCheck to see you're attempting to reference the correct element.");
+      }
       this._scope = "a[" + scope + "]";
     }
 
@@ -61,7 +69,7 @@ define([], function(){
 
   /**
    * Return the scope identifier from the Scope object
-   * @return {_scope} string, the identifier of the current scope
+   * @return string, the identifier of the current scope
    */
   Scope.prototype.identifier = function(){
     return this._scope;

@@ -9,6 +9,7 @@ requirejs.config({
         Status: 'status',
         Scope: 'scope',
         Intermission: 'intermission',
+        Target: 'target',
         Jaz: 'jaz'
     }
 });
