@@ -1,17 +1,49 @@
 # Jaz
-##Dynamic web page rendering
+## Dynamic web page rendering
 Load and render web pages through the use of history API and AJAX to
 provide a seamless and smooth transition. Jaz takes predetermined
 contents of web pages and dynamically renders them onto the current
 page, while asynchronously utilizing history API to navigate the user to
 that web page, ultimately providing a smooth page transition.
 
-##Why use Jaz?
+## Why use Jaz?
 Traditonal links simply redirect the user to an entirely new page, consequently removing the user, for at least a few moments, from the website's native experience. With Jaz, the user doesn't have to go to the new page, rather the new page comes to the user! This provides a seamless and smooth experience while traversing a website.
 
 ![Jaz Visual Example](img/example.png)
 
-##Testing
+## Configuration
+Simply include the jaz production file on your webpage (preferably all webpages)
+```
+<script type="text/javascript" src="scripts/jaz.min.js"></script>
+```
+Next, you need to instantiate a Jaz object
+```
+var J = new Jaz();
+```
+Then, simply configure the Jaz object with settings:
+ - `scope`: *string*, specifies what links are to be affected by Jaz (`*` flag is all links)
+ - `intermission`: *object*, holds two functions that are to execute when a link within the scope is clicked and when new content has rendered respectively
+   - `loading`: *function*, fires when a link is clicked
+   - `callback`: *function*, fires when new content has rendered
+ - `targetArea`, *string*, specifies where the newly rendered content will be loaded into
+
+A basic configuration can look something like this
+```
+ J.config({
+    scope: "*", // Wildcard flags all links on the page
+    intermission: {
+      loading: loadingFunction,
+      callback: loadedFunction
+    },
+    targetArea: "body" // Denotes the <body> tag
+  });
+```
+Once Jaz is configured and ready to go, simply tell it to start listening and you're good to go
+```
+J.listen();
+```
+
+## Testing
 While Jaz by itself is a standalone software, some tools and utilities are used for building and testing purposes. All of the required files are located in the `/test` directory for testing. Any dependencies will already be integrated into the test code, but for reference and documentation they will be listed below:
-#####Dependencies
+##### Dependencies
  - RequireJS - http://requirejs.org/
