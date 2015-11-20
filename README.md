@@ -7,7 +7,7 @@ page, while asynchronously utilizing history API to navigate the user to
 that web page, ultimately providing a smooth page transition.
 
 ##Why use Jaz?
-Traditonal links simply redirect the user to an entirely new page, consequently removing the user for at least a few moment from the website's native experience. With Jaz, the user doesn't have to go to the new page, rather the new page comes to the user! This provides a seamless and smooth experience while traversing a website.
+Traditonal links simply redirect the user to an entirely new page, consequently removing the user, for at least a few moments, from the website's native experience. With Jaz, the user doesn't have to go to the new page, rather the new page comes to the user! This provides a seamless and smooth experience while traversing a website.
 
 ![Jaz Visual Example](img/example.png)
 
