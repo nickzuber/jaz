@@ -7,6 +7,6 @@ page, while asynchronously utilizing history API to navigate the user to
 that web page, ultimately providing a smooth page transition.
 
 ##Testing
-For testing, all of the required files are located in the `/test` directory. Any dependencies will already be integrated into the test code, but for reference and documentation they will be listed below:
+While Jaz by itself is a standalone software, some tools and utilities are used for building and testing purposes. All of the required files are located in the `/test` directory for testing. Any dependencies will already be integrated into the test code, but for reference and documentation they will be listed below:
 #####Dependencies
  - RequireJS - http://requirejs.org/
