@@ -193,12 +193,12 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
     // Fix any JavaScript in newly rendered content
     var renderedInternalScripts = [];
     var renderedExternalScripts = [];
-    for(var i=0; i<document.querySelectorAll(".action-panel-main script").length; i++){
+    for(var i=0; i<document.querySelectorAll(this.targetArea.identifier() + " script").length; i++){
       // If not external
-      if(!document.querySelectorAll(".action-panel-main script")[i].src){
-        renderedInternalScripts.push(document.querySelectorAll(".action-panel-main script")[i]);
+      if(!document.querySelectorAll(this.targetArea.identifier() + " script")[i].src){
+        renderedInternalScripts.push(document.querySelectorAll(this.targetArea.identifier() + " script")[i]);
       }else{
-        renderedExternalScripts.push(document.querySelectorAll(".action-panel-main script")[i]);
+        renderedExternalScripts.push(document.querySelectorAll(this.targetArea.identifier() + " script")[i]);
       }
     }
     // eval() the internal scripts
