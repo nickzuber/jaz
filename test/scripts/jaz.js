@@ -116,10 +116,8 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
 
     if(window.XMLHttpRequest){
       request = new XMLHttpRequest();
-      console.log('Request created.');
     }else{
       request = new ActiveXObject("Microsoft.XMLHTTP");
-      console.log('Request created.');
     }
 
     // Open request
@@ -128,7 +126,6 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
     request.onreadystatechange = function(){
       if(request.readyState == XMLHttpRequest.DONE){
         if(request.status == 200){
-          console.log('Request success.');
           
           // Parse loaded HTML and repopulate targetArea
           this.parseHTML(request.responseText);
@@ -146,6 +143,7 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
           this.status.inProcess = false;
         }
         else{
+          // Fall back to default routing
           window.location = target;
           throw new Error("AJAX load failed: invalid status returned: " + request.status);
         }
@@ -191,6 +189,26 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
 
     // Inject targetArea with new content
     document.querySelector(this.targetArea.identifier()).innerHTML = renderedData.innerHTML;
+
+    // Fix any JavaScript in newly rendered content
+    var renderedInternalScripts = [];
+    var renderedExternalScripts = [];
+    for(var i=0; i<document.querySelectorAll(".action-panel-main script").length; i++){
+      // If not external
+      if(!document.querySelectorAll(".action-panel-main script")[i].src){
+        renderedInternalScripts.push(document.querySelectorAll(".action-panel-main script")[i]);
+      }else{
+        renderedExternalScripts.push(document.querySelectorAll(".action-panel-main script")[i]);
+      }
+    }
+    // eval() the internal scripts
+    renderedInternalScripts.map(function(script){
+      eval(script.innerHTML);
+    });
+    // Dynamically load the external
+    renderedExternalScripts.map(function(script){
+      renderExternalScript(script.src);
+    });
   }
 
   /**
@@ -204,6 +222,19 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
       }
     }
   };
+
+  /**
+   * Takes in a url for an external javascript file and rerenders
+   * it onto the current page.
+   * @param {url} string, the url of the external script
+   * return {void}
+   */
+  function renderExternalScript(url){
+    var newScript = document.createElement("script");
+    newScript.type = "text/javascript";
+    newScript.src = url;
+    document.querySelector("head").appendChild(newScript);
+  }
 
 
   // Push Jaz onto the global scope
