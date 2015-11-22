@@ -11,6 +11,8 @@
 
 define([], function(){
 
+  'use strict';
+
   /**
    * Intermission constructor takes a simple object containing anywhere from
    * zero, one, or two functions. If the object is null, false, or empty, it

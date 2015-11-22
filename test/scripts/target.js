@@ -6,6 +6,8 @@
 // 
 
 define([], function(){
+  
+  'use strict';
 
   /**
    * Target object defines the target area of the program, in the sense of

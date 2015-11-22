@@ -16,6 +16,8 @@
 
 define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, Intermission, Target){
 
+  'use strict';
+
   /**
    * Construct base object with respective private data
    * @attribute {scope} which links are to be affected by Jaz
@@ -34,15 +36,20 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
    * @param {config} object, holds configuration settings of scope and intermission
    */
   Jaz.prototype.config = function(config){
+
+    var scope;
+    var intermission;
+    var targetArea;
+
     if(typeof config != 'object' || !config){
       throw new Error("Configuration settings must be an object.");
     }
 
     // Assume our config object is defined with two attributes
     try{
-      const scope = config.scope;
-      const intermission = config.intermission;
-      const targetArea = config.targetArea;
+      scope = config.scope;
+      intermission = config.intermission;
+      targetArea = config.targetArea;
     }
     catch(e){
       throw new Error("Configuration object must be constructed with a string, and an object of functions: " + e.message);

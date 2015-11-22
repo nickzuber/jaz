@@ -18,6 +18,8 @@
 
 define([], function(){
 
+  'use strict';
+
   /**
    * Scope object defines the scope of the program, in the sense of
    * which links will be affected by Jaz.

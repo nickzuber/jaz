@@ -25,12 +25,6 @@ require(['Jaz'], function(Jaz){
     document.querySelectorAll('.tb-content-panel')[1].style.opacity = 1;
   }
 
-
-
-
-
-
-
   J.config({
     scope: "*",
     intermission: {
@@ -39,12 +33,6 @@ require(['Jaz'], function(Jaz){
     },
     targetArea: ".action-panel-main"
   });
-
-
-
-
-
-
 
   J.listen();
 

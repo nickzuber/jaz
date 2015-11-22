@@ -9,6 +9,8 @@
 // 
 
 define([], function(){
+  
+  'use strict';
 
   /**
    * Status object controls the current state of the program.
