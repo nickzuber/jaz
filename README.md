@@ -13,11 +13,11 @@ Traditonal links simply redirect the user to an entirely new page, consequently 
 
 ## Configuration
 Simply include the jaz production file on your webpage (preferably all webpages)
-```
+```html
 <script type="text/javascript" src="scripts/jaz.min.js"></script>
 ```
 Next, you need to instantiate a Jaz object
-```
+```javascript
 var J = new Jaz();
 ```
 Then, simply configure the Jaz object with settings:
@@ -28,7 +28,7 @@ Then, simply configure the Jaz object with settings:
  - `targetArea`, *string*, specifies where the newly rendered content will be loaded into
 
 A basic configuration can look something like this
-```
+```javascript
  J.config({
     scope: "*", // Wildcard flags all links on the page
     intermission: {
@@ -39,7 +39,7 @@ A basic configuration can look something like this
   });
 ```
 Once Jaz is configured and ready to go, simply tell it to start listening and you're good to go
-```
+```javascript
 J.listen();
 ```
 
