@@ -1,3 +1,6 @@
+/*! OUT OF DATE  */
+
+
 /**
  * Status object controls the current state of the program.
  * @attribute {inProcess} current state (true if event is firing)
