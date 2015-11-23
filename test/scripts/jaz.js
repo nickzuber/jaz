@@ -28,6 +28,7 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
     this.status = Status;
     this.scope = undefined;
     this.intermission = undefined;
+    this.delay = 0;
     this.targetArea = undefined;
   };
 
@@ -53,6 +54,11 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
     }
     catch(e){
       throw new Error("Configuration object must be constructed with a string, and an object of functions: " + e.message);
+    }
+
+    // Check to see if a delay is requested
+    if(typeof config.delay == 'number' && config.delay){
+      this.delay = config.delay;
     }
     
     this.scope = new Scope(scope);
@@ -100,6 +106,7 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
 
     // If Jaz is already routing, ignore other requests
     if(this.status.inProcess){
+      console.warn("Process is already active; all subsequent actions invoked while this process is running will be ignored.")
       return;
     }
 
@@ -109,7 +116,7 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
     // Fire intermission function and then continue process when that finishes
     this.intermission.fire(function(){
       this.continueProcess(e, target);
-    }.bind(this));
+    }.bind(this), this.delay);
   }
 
   Jaz.prototype.continueProcess = function(e, target){
@@ -272,11 +279,18 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
    * return {void}
    */
   function renderExternalScript(url){
-    var newScript = document.createElement("script");
-    newScript.type = "text/javascript";
-    newScript.src = url;
-    document.querySelector("head").appendChild(newScript);
-    return true;
+    var passed = false;
+    try{
+      var newScript = document.createElement("script");
+      newScript.type = "text/javascript";
+      newScript.src = url;
+      document.querySelector("head").appendChild(newScript);
+      passed = true;
+    }
+    catch(e){
+      throw new Error("External JavaScript file failed to load properly.");
+    }
+    return passed;
   }
 
 

@@ -25,6 +25,7 @@ Then, simply configure the Jaz object with settings:
  - `intermission`: *object*, holds two functions that are to execute when a link within the scope is clicked and when new content has rendered respectively
    - `loading`: *function*, fires when a link is clicked
    - `callback`: *function*, fires when new content has rendered
+ - `delay`: *number*, adds a delay in milliseconds from when the `loading` function fires and the routing process begins (defaults to 0)
  - `targetArea`, *string*, specifies where the newly rendered content will be loaded into
 
 A basic configuration can look something like this
@@ -35,6 +36,7 @@ A basic configuration can look something like this
       loading: loadingFunction,
       callback: loadedFunction
     },
+    delay: 1000, // 1 second delay
     targetArea: "body" // Denotes the <body> tag
   });
 ```

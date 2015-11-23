@@ -51,22 +51,19 @@ define([], function(){
    * routing process)
    * @param {callback} the function to be called when the loading
    *                   intermission completes
+   * @param {_delay} the delay configured in the respective Jaz object
    * @return {void}
    */
-  Intermission.prototype.fire = function(callback){
+  Intermission.prototype.fire = function(callback, _delay){
     if(typeof this.loading == 'function' && this.loading){
       var load = new Promise(function(fulfill, reject){
-        var passed = false;
         try{
           this.loading();
-          passed = true;
+          setTimeout(function(){
+            fulfill(console.log('Intermission loading fired correctly.'));
+          }, _delay);
         }catch(e){
-          throw new Error("Intermission loading function failed to fire: " + e.getMessage);
-        }
-        if(passed){
-          fulfill(console.log('Intermission loading fired correctly.'));
-        }else{
-          reject(new Error("Intermission loading function was recjected."));
+          reject(new Error("Intermission loading function was recjected.\nPerhaps the loading function given itself throws an error; check your loading function.\nError: " + e.getMessage));
         }
       }.bind(this));
     }
