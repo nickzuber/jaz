@@ -106,8 +106,15 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
     // Update status
     this.status.inProcess = true;
 
-    // Fire intermission function
-    this.intermission.fire();
+    // Fire intermission function and then continue process when that finishes
+    this.intermission.fire(function(){
+      this.continueProcess(e, target);
+    }.bind(this));
+  }
+
+  Jaz.prototype.continueProcess = function(e, target){
+    // Update current page state (@via history API)
+    window.history.pushState({}, '', target);
 
     // href string value
     var request;
@@ -128,19 +135,8 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
         if(request.status == 200){
           
           // Parse loaded HTML and repopulate targetArea
+          // Rerender HTML and finish processes
           this.parseHTML(request.responseText);
-
-          // Update current page state (@via history API)
-          window.history.pushState({}, '', target);
-
-          // Fire callback
-          this.intermission.done();
-
-          // Reset link event listeners to compensate for newly loaded links
-          this.remoteBlockRouting();
-
-          // Reset status
-          this.status.inProcess = false;
         }
         else{
           // Fall back to default routing
@@ -158,7 +154,6 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
       console.warn("Error: Connection refused.\nFall back initiated.");
       window.location = target;
     }
-
   }
 
   /**
@@ -201,15 +196,62 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
         renderedExternalScripts.push(document.querySelectorAll(this.targetArea.identifier() + " script")[i]);
       }
     }
+
+    var allPromises = [];
+
     // eval() the internal scripts
     renderedInternalScripts.map(function(script){
-      eval(script.innerHTML);
+      allPromises.push(new Promise(function(fulfill, reject){
+        var passed = false;
+        try{
+          eval(script.innerHTML);
+          passed = true;
+        }
+        catch(e){
+          throw new Error('Failure to render internal script: ' + e.getMessage);
+        }
+        if(passed){
+          fulfill(console.log('Internal script fulfilled.'));
+        }else{
+          reject(new Error("Internal script tag failed to render correctly."));
+        }
+      }));
     });
+
     // Dynamically load the external
     renderedExternalScripts.map(function(script){
-      renderExternalScript(script.src);
+      allPromises.push(new Promise(function(fulfill, reject){
+        if(renderExternalScript(script.src)){
+          fulfill(console.log('External script fulfilled.'));
+        }else{
+          reject(new Error("External script tag failed to render correctly."));
+        }
+      }));
+    });
+
+    Promise.all(allPromises).then(function(){
+      console.log('Fulfilled all promises.');
+      this.completeProcess();
+    }.bind(this), function(){
+      throw new Error('Some error occurred while attemping to render scripts.');
     });
   }
+
+  /**
+   * Once the page finishes rendering, wrap up any tasks left
+   * @param {void}
+   * @return {void}
+   */
+  Jaz.prototype.completeProcess = function(){
+    // Fire callback
+    this.intermission.done();
+
+    // Reset link event listeners to compensate for newly loaded links
+    this.remoteBlockRouting();
+
+    // Reset status
+    this.status.inProcess = false;
+  };
 
   /**
    * Handle user pressing back button if Jaz is active.
@@ -234,6 +276,7 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
     newScript.type = "text/javascript";
     newScript.src = url;
     document.querySelector("head").appendChild(newScript);
+    return true;
   }
 
 

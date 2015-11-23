@@ -45,10 +45,32 @@ define([], function(){
 
   } 
 
-  Intermission.prototype.fire = function(){
+  /**
+   * Fires the loading intermission function and when it finishes
+   * the callback is called (usually the function that continutes
+   * routing process)
+   * @param {callback} the function to be called when the loading
+   *                   intermission completes
+   * @return {void}
+   */
+  Intermission.prototype.fire = function(callback){
     if(typeof this.loading == 'function' && this.loading){
-      this.loading();
+      var load = new Promise(function(fulfill, reject){
+        var passed = false;
+        try{
+          this.loading();
+          passed = true;
+        }catch(e){
+          throw new Error("Intermission loading function failed to fire: " + e.getMessage);
+        }
+        if(passed){
+          fulfill(console.log('Intermission loading fired correctly.'));
+        }else{
+          reject(new Error("Intermission loading function was recjected."));
+        }
+      }.bind(this));
     }
+    load.then(callback);
   }
 
   Intermission.prototype.done = function(){
