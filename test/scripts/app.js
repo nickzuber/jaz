@@ -1,14 +1,36 @@
 
+// Comment out the require bit if using minified file instead of RequiresJS
 require(['Jaz'], function(Jaz){
 
   var J = new Jaz();
+
+  var links = [];
+
+  window.headerColor = 'red';
+
+  function addHandlers(){
+    for(var i=0; i<document.querySelectorAll('a').length; i++){
+      links.push(document.querySelectorAll('a')[i]);
+    }
+
+    links.map(function(a){
+      a.addEventListener("mousedown", function(e){
+        headerColor = a.getAttribute("data-color");
+      });
+    });
+  }
+
+  function updateColor(){
+    document.querySelector('.action-panel-nav').style.backgroundColor = headerColor;
+  }
 
   function loadingFunction(){
     if(!document.querySelector('.waiting')){
       var waiting = document.createElement('div');
       waiting.className = 'waiting';
       document.body.appendChild(waiting);
-      document.querySelector('#nav-header').innerHTML = '<img src="img/loading.gif" style="opacity:.25;" height="35px" />';
+      document.querySelector('#nav-header').innerHTML = '<img src="img/loading.gif" style="opacity:.25;" height="50px" />';
+      updateColor();
     }
   }
 
@@ -16,6 +38,7 @@ require(['Jaz'], function(Jaz){
     if(document.querySelector('.waiting')){
       document.querySelector('.waiting').remove();
       document.querySelector('#nav-header').innerHTML = 'Home';
+      addHandlers();
     }
   }
 

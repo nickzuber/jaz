@@ -66,8 +66,10 @@ define([], function(){
           reject(new Error("Intermission loading function was recjected.\nPerhaps the loading function given itself throws an error; check your loading function.\nError: " + e.getMessage));
         }
       }.bind(this));
+      load.then(callback);
+    }else{
+      callback();
     }
-    load.then(callback);
   }
 
   Intermission.prototype.done = function(){

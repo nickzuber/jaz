@@ -155,7 +155,7 @@
   }
 
 
-  // 
+// 
 // Intermission Object
 // ===================
 // Specifies and intermission function that is to fire while
@@ -166,74 +166,75 @@
 // function has finished.
 // 
 
+'use strict';
 
-  'use strict';
+/**
+ * Intermission constructor takes a simple object containing anywhere from
+ * zero, one, or two functions. If the object is null, false, or empty, it
+ * will be assumed that no transition is requested.
+ * @attribute {_intermission} function, to execute when new page is rendering
+ */
+const Intermission = function(functionsObject){
+  if(typeof functionsObject == 'undefined' || !functionsObject){
+    console.warn("Intermission object is undefined; assumed no Intermission is requested.");
+    this.loading = null;
+    this.callback = null;
+    return;
+  }
+  if(typeof functionsObject != 'object'){
+    throw new Error("Intermission objects must be constructed with an basic object containing the loading function and a callback function.");
+  }
 
-  /**
-   * Intermission constructor takes a simple object containing anywhere from
-   * zero, one, or two functions. If the object is null, false, or empty, it
-   * will be assumed that no transition is requested.
-   * @attribute {_intermission} function, to execute when new page is rendering
-   */
-  const Intermission = function(functionsObject){
-    if(typeof functionsObject == 'undefined' || !functionsObject){
-      console.warn("Intermission object is undefined; assumed no Intermission is requested.");
-      this.loading = null;
-      this.callback = null;
-      return;
-    }
-    if(typeof functionsObject != 'object'){
-      throw new Error("Intermission objects must be constructed with an basic object containing the loading function and a callback function.");
-    }
+  // Assume we have an object containing two attributes defined as functions
+  // labelled 'loading' and 'callback'
+  const loading = functionsObject.loading;
+  const callback = functionsObject.callback;
+  if(typeof callback != 'function' || typeof loading != 'function'){
+    throw new Error("Error when defining intermission and callback.\nMake sure they are both defined as valid functions.");
+  }
+  
+  // 
 
-    // Assume we have an object containing two attributes defined as functions
-    // labelled 'loading' and 'callback'
-    const loading = functionsObject.loading;
-    const callback = functionsObject.callback;
-    if(typeof callback != 'function' || typeof loading != 'function'){
-      throw new Error("Error when defining intermission and callback.\nMake sure they are both defined as valid functions.");
-    }
-    
-    // 
+  this.loading = loading;
+  this.callback = callback;
 
-    this.loading = loading;
-    this.callback = callback;
+} 
 
-  } 
-
-  /**
-   * Fires the loading intermission function and when it finishes
-   * the callback is called (usually the function that continutes
-   * routing process)
-   * @param {callback} the function to be called when the loading
-   *                   intermission completes
-   * @return {void}
-   */
-  Intermission.prototype.fire = function(callback){
-    if(typeof this.loading == 'function' && this.loading){
-      var load = new Promise(function(fulfill, reject){
-        var passed = false;
-        try{
-          this.loading();
-          passed = true;
-        }catch(e){
-          throw new Error("Intermission loading function failed to fire: " + e.getMessage);
-        }
-        if(passed){
+/**
+ * Fires the loading intermission function and when it finishes
+ * the callback is called (usually the function that continutes
+ * routing process)
+ * @param {callback} the function to be called when the loading
+ *                   intermission completes
+ * @param {_delay} the delay configured in the respective Jaz object
+ * @return {void}
+ */
+Intermission.prototype.fire = function(callback, _delay){
+  if(typeof this.loading == 'function' && this.loading){
+    var load = new Promise(function(fulfill, reject){
+      try{
+        this.loading();
+        setTimeout(function(){
           fulfill(console.log('Intermission loading fired correctly.'));
-        }else{
-          reject(new Error("Intermission loading function was recjected."));
-        }
-      }.bind(this));
-    }
+        }, _delay);
+      }catch(e){
+        reject(new Error("Intermission loading function was recjected.\nPerhaps the loading function given itself throws an error; check your loading function.\nError: " + e.getMessage));
+      }
+    }.bind(this));
     load.then(callback);
+  }else{
+    callback();
   }
+}
 
-  Intermission.prototype.done = function(){
-    if(typeof this.callback == 'function' && this.callback){
-      this.callback();
-    }
+Intermission.prototype.done = function(){
+  if(typeof this.callback == 'function' && this.callback){
+    this.callback();
   }
+}
+
+
+
 
 
 
@@ -248,269 +249,283 @@
 // function has finished.
 //
 
-  'use strict';
+'use strict';
 
-  /**
-   * Construct base object with respective private data
-   * @attribute {scope} which links are to be affected by Jaz
-   * @attribute {transition} object, holds functions that executes while new page is rendering
-   * and a callback for when the page finishes rendering.
-   */
-  const Jaz = function(){
-    this.status = Status;
-    this.scope = undefined;
-    this.intermission = undefined;
-    this.targetArea = undefined;
-  };
+/**
+ * Construct base object with respective private data
+ * @attribute {scope} which links are to be affected by Jaz
+ * @attribute {transition} object, holds functions that executes while new page is rendering
+ * and a callback for when the page finishes rendering.
+ */
+const Jaz = function(){
+  this.status = Status;
+  this.scope = undefined;
+  this.intermission = undefined;
+  this.delay = 0;
+  this.targetArea = undefined;
+};
 
-  /**
-   * Construct the Jaz object
-   * @param {config} object, holds configuration settings of scope and intermission
-   */
-  Jaz.prototype.config = function(config){
+/**
+ * Construct the Jaz object
+ * @param {config} object, holds configuration settings of scope and intermission
+ */
+Jaz.prototype.config = function(config){
 
-    var scope;
-    var intermission;
-    var targetArea;
+  var scope;
+  var intermission;
+  var targetArea;
 
-    if(typeof config != 'object' || !config){
-      throw new Error("Configuration settings must be an object.");
-    }
-
-    // Assume our config object is defined with two attributes
-    try{
-      scope = config.scope;
-      intermission = config.intermission;
-      targetArea = config.targetArea;
-    }
-    catch(e){
-      throw new Error("Configuration object must be constructed with a string, and an object of functions: " + e.message);
-    }
-    
-    this.scope = new Scope(scope);
-    this.intermission = new Intermission(intermission);
-    this.targetArea = new Target(targetArea);
-  };
-
-  /**
-   * Blocks the links within scope of the program from executing their
-   * default routing. We will prepare these links with the Jaz routing
-   * property.
-   */
-  Jaz.prototype.remoteBlockRouting = function(){
-    if(typeof this.scope != 'object' || !this.scope){
-      throw new Error("Error: undefined or invalid scope.");
-    }
-
-    // Initialize container for links within scope
-    var encapsulatedLinks = [];
-
-    // Grab all links in scope
-    for(var i=0; i<document.querySelectorAll(this.scope.identifier()).length; i++){
-      encapsulatedLinks.push(document.querySelectorAll(this.scope.identifier())[i]);
-    }
-
-    // Attached event to links in scope that block default routing
-    // and attach custom Jaz routing method
-    encapsulatedLinks.map(function(a){
-      var target = a.href;
-      a.addEventListener("click", function(e){
-        this.reconfigureRouting(e, target);
-      }.bind(this));
-    }.bind(this));
-
+  if(typeof config != 'object' || !config){
+    throw new Error("Configuration settings must be an object.");
   }
 
-  /**
-   * The event that is attatched to a link, preventing it from its default
-   * routing and adding the custom Jaz routing method.
-   * @param {e} object, reference to the link that is clicked
-   * @param {target} string, the address of our target destination
-   */
-  Jaz.prototype.reconfigureRouting = function(e, target){
-    e.preventDefault();
-
-    // If Jaz is already routing, ignore other requests
-    if(this.status.inProcess){
-      return;
-    }
-
-    // Update status
-    this.status.inProcess = true;
-
-    // Fire intermission function and then continue process when that finishes
-    this.intermission.fire(function(){
-      this.continueProcess(e, target);
-    }.bind(this));
+  // Assume our config object is defined with two attributes
+  try{
+    scope = config.scope;
+    intermission = config.intermission;
+    targetArea = config.targetArea;
+  }
+  catch(e){
+    throw new Error("Configuration object must be constructed with a string, and an object of functions: " + e.message);
   }
 
-  Jaz.prototype.continueProcess = function(e, target){
-    // Update current page state (@via history API)
-    window.history.pushState({}, '', target);
+  // Check to see if a delay is requested
+  if(typeof config.delay == 'number' && config.delay){
+    this.delay = config.delay;
+  }
+  
+  this.scope = new Scope(scope);
+  this.intermission = new Intermission(intermission);
+  this.targetArea = new Target(targetArea);
+};
 
-    // href string value
-    var request;
+/**
+ * Blocks the links within scope of the program from executing their
+ * default routing. We will prepare these links with the Jaz routing
+ * property.
+ */
+Jaz.prototype.remoteBlockRouting = function(){
+  if(typeof this.scope != 'object' || !this.scope){
+    throw new Error("Error: undefined or invalid scope.");
+  }
 
-    console.log('Route path: ' + target);
+  // Initialize container for links within scope
+  var encapsulatedLinks = [];
 
-    if(window.XMLHttpRequest){
-      request = new XMLHttpRequest();
+  // Grab all links in scope
+  for(var i=0; i<document.querySelectorAll(this.scope.identifier()).length; i++){
+    encapsulatedLinks.push(document.querySelectorAll(this.scope.identifier())[i]);
+  }
+
+  // Attached event to links in scope that block default routing
+  // and attach custom Jaz routing method
+  encapsulatedLinks.map(function(a){
+    var target = a.href;
+    a.addEventListener("click", function(e){
+      this.reconfigureRouting(e, target);
+    }.bind(this));
+  }.bind(this));
+
+}
+
+/**
+ * The event that is attatched to a link, preventing it from its default
+ * routing and adding the custom Jaz routing method.
+ * @param {e} object, reference to the link that is clicked
+ * @param {target} string, the address of our target destination
+ */
+Jaz.prototype.reconfigureRouting = function(e, target){
+  e.preventDefault();
+
+  // If Jaz is already routing, ignore other requests
+  if(this.status.inProcess){
+    console.warn("Process is already active; all subsequent actions invoked while this process is running will be ignored.")
+    return;
+  }
+
+  // Update status
+  this.status.inProcess = true;
+
+  // Fire intermission function and then continue process when that finishes
+  this.intermission.fire(function(){
+    this.continueProcess(e, target);
+  }.bind(this), this.delay);
+}
+
+Jaz.prototype.continueProcess = function(e, target){
+  // Update current page state (@via history API)
+  window.history.pushState({}, '', target);
+
+  // href string value
+  var request;
+
+  console.log('Route path: ' + target);
+
+  if(window.XMLHttpRequest){
+    request = new XMLHttpRequest();
+  }else{
+    request = new ActiveXObject("Microsoft.XMLHTTP");
+  }
+
+  // Open request
+  request.open("GET", target, true);
+
+  request.onreadystatechange = function(){
+    if(request.readyState == XMLHttpRequest.DONE){
+      if(request.status == 200){
+        
+        // Parse loaded HTML and repopulate targetArea
+        // Rerender HTML and finish processes
+        this.parseHTML(request.responseText);
+      }
+      else{
+        // Fall back to default routing
+        window.location = target;
+        throw new Error("AJAX load failed: invalid status returned: " + request.status);
+      }
+    }
+  }.bind(this);
+
+  // Attempt to invoke request
+  try{
+    request.send();
+  }
+  catch(e){
+    console.warn("Error: Connection refused.\nFall back initiated.");
+    window.location = target;
+  }
+}
+
+/**
+ * Begin the process of rerouting links within the scope and listening
+ * to page requests.
+ */
+Jaz.prototype.listen = function(){
+  console.warn('Jaz is listening...');
+  // Push currently configured instance of Jaz object onto global scope.
+  // This is needed for handling popstate changes (user going back/forward)
+  window.Jaz_Reference = this;
+  this.remoteBlockRouting();
+}
+
+/**
+ * Create virtual DOM, load in raw HTML, parsed to extract 
+ * target area data and return that data.
+ * @param {rawHTML} string, HTML in the form of a string
+ * @return target area data
+ */
+Jaz.prototype.parseHTML = function(rawHTML){
+  // Construct a virtual DOM to contain and parse our raw HTML
+  const DOM = document.createElement('html');
+  DOM.innerHTML = rawHTML;
+
+  // Extract targetArea
+  const renderedData = DOM.querySelector(this.targetArea.identifier());
+
+  // Inject targetArea with new content
+  document.querySelector(this.targetArea.identifier()).innerHTML = renderedData.innerHTML;
+
+  // Fix any JavaScript in newly rendered content
+  var renderedInternalScripts = [];
+  var renderedExternalScripts = [];
+  for(var i=0; i<document.querySelectorAll(this.targetArea.identifier() + " script").length; i++){
+    // If not external
+    if(!document.querySelectorAll(this.targetArea.identifier() + " script")[i].src){
+      renderedInternalScripts.push(document.querySelectorAll(this.targetArea.identifier() + " script")[i]);
     }else{
-      request = new ActiveXObject("Microsoft.XMLHTTP");
+      renderedExternalScripts.push(document.querySelectorAll(this.targetArea.identifier() + " script")[i]);
     }
+  }
 
-    // Open request
-    request.open("GET", target, true);
+  var allPromises = [];
 
-    request.onreadystatechange = function(){
-      if(request.readyState == XMLHttpRequest.DONE){
-        if(request.status == 200){
-          
-          // Parse loaded HTML and repopulate targetArea
-          // Rerender HTML and finish processes
-          this.parseHTML(request.responseText);
-        }
-        else{
-          // Fall back to default routing
-          window.location = target;
-          throw new Error("AJAX load failed: invalid status returned: " + request.status);
-        }
+  // eval() the internal scripts
+  renderedInternalScripts.map(function(script){
+    allPromises.push(new Promise(function(fulfill, reject){
+      var passed = false;
+      try{
+        eval(script.innerHTML);
+        passed = true;
       }
-    }.bind(this);
-
-    // Attempt to invoke request
-    try{
-      request.send();
-    }
-    catch(e){
-      console.warn("Error: Connection refused.\nFall back initiated.");
-      window.location = target;
-    }
-  }
-
-  /**
-   * Begin the process of rerouting links within the scope and listening
-   * to page requests.
-   */
-  Jaz.prototype.listen = function(){
-    console.warn('Jaz is listening...');
-    // Push currently configured instance of Jaz object onto global scope.
-    // This is needed for handling popstate changes (user going back/forward)
-    window.Jaz_Reference = this;
-    this.remoteBlockRouting();
-  }
-
-  /**
-   * Create virtual DOM, load in raw HTML, parsed to extract 
-   * target area data and return that data.
-   * @param {rawHTML} string, HTML in the form of a string
-   * @return target area data
-   */
-  Jaz.prototype.parseHTML = function(rawHTML){
-    // Construct a virtual DOM to contain and parse our raw HTML
-    const DOM = document.createElement('html');
-    DOM.innerHTML = rawHTML;
-
-    // Extract targetArea
-    const renderedData = DOM.querySelector(this.targetArea.identifier());
-
-    // Inject targetArea with new content
-    document.querySelector(this.targetArea.identifier()).innerHTML = renderedData.innerHTML;
-
-    // Fix any JavaScript in newly rendered content
-    var renderedInternalScripts = [];
-    var renderedExternalScripts = [];
-    for(var i=0; i<document.querySelectorAll(this.targetArea.identifier() + " script").length; i++){
-      // If not external
-      if(!document.querySelectorAll(this.targetArea.identifier() + " script")[i].src){
-        renderedInternalScripts.push(document.querySelectorAll(this.targetArea.identifier() + " script")[i]);
+      catch(e){
+        throw new Error('Failure to render internal script: ' + e.getMessage);
+      }
+      if(passed){
+        fulfill(console.log('Internal script fulfilled.'));
       }else{
-        renderedExternalScripts.push(document.querySelectorAll(this.targetArea.identifier() + " script")[i]);
+        reject(new Error("Internal script tag failed to render correctly."));
       }
+    }));
+  });
+
+  // Dynamically load the external
+  renderedExternalScripts.map(function(script){
+    allPromises.push(new Promise(function(fulfill, reject){
+      if(renderExternalScript(script.src)){
+        fulfill(console.log('External script fulfilled.'));
+      }else{
+        reject(new Error("External script tag failed to render correctly."));
+      }
+    }));
+  });
+
+  Promise.all(allPromises).then(function(){
+    console.log('Fulfilled all promises.');
+    this.completeProcess();
+  }.bind(this), function(){
+    throw new Error('Some error occurred while attemping to render scripts.');
+  });
+}
+
+/**
+ * Once the page finishes rendering, wrap up any tasks left
+ * @param {void}
+ * @return {void}
+ */
+Jaz.prototype.completeProcess = function(){
+  // Fire callback
+  this.intermission.done();
+
+  // Reset link event listeners to compensate for newly loaded links
+  this.remoteBlockRouting();
+
+  // Reset status
+  this.status.inProcess = false;
+};
+
+/**
+ * Handle user pressing back button if Jaz is active.
+ */
+window.onpopstate = function(e){
+  if(typeof window.Jaz_Reference == 'object' && window.Jaz_Reference){
+    if(e.state){
+      var target = window.location.href || document.URL;
+      Jaz_Reference.reconfigureRouting(e, target);
     }
-
-    var allPromises = [];
-
-    // eval() the internal scripts
-    renderedInternalScripts.map(function(script){
-      allPromises.push(new Promise(function(fulfill, reject){
-        var passed = false;
-        try{
-          eval(script.innerHTML);
-          passed = true;
-        }
-        catch(e){
-          throw new Error('Failure to render internal script: ' + e.getMessage);
-        }
-        if(passed){
-          fulfill(console.log('Internal script fulfilled.'));
-        }else{
-          reject(new Error("Internal script tag failed to render correctly."));
-        }
-      }));
-    });
-
-    // Dynamically load the external
-    renderedExternalScripts.map(function(script){
-      allPromises.push(new Promise(function(fulfill, reject){
-        if(renderExternalScript(script.src)){
-          fulfill(console.log('External script fulfilled.'));
-        }else{
-          reject(new Error("External script tag failed to render correctly."));
-        }
-      }));
-    });
-
-    Promise.all(allPromises).then(function(){
-      console.log('Fulfilled all promises.');
-      this.completeProcess();
-    }.bind(this), function(){
-      throw new Error('Some error occurred while attemping to render scripts.');
-    });
   }
+};
 
-  /**
-   * Once the page finishes rendering, wrap up any tasks left
-   * @param {void}
-   * @return {void}
-   */
-  Jaz.prototype.completeProcess = function(){
-    // Fire callback
-    this.intermission.done();
-
-    // Reset link event listeners to compensate for newly loaded links
-    this.remoteBlockRouting();
-
-    // Reset status
-    this.status.inProcess = false;
-  };
-
-  /**
-   * Handle user pressing back button if Jaz is active.
-   */
-  window.onpopstate = function(e){
-    if(typeof window.Jaz_Reference == 'object' && window.Jaz_Reference){
-      if(e.state){
-        var target = window.location.href || document.URL;
-        Jaz_Reference.reconfigureRouting(e, target);
-      }
-    }
-  };
-
-  /**
-   * Takes in a url for an external javascript file and rerenders
-   * it onto the current page.
-   * @param {url} string, the url of the external script
-   * return {void}
-   */
-  function renderExternalScript(url){
+/**
+ * Takes in a url for an external javascript file and rerenders
+ * it onto the current page.
+ * @param {url} string, the url of the external script
+ * return {void}
+ */
+function renderExternalScript(url){
+  var passed = false;
+  try{
     var newScript = document.createElement("script");
     newScript.type = "text/javascript";
     newScript.src = url;
     document.querySelector("head").appendChild(newScript);
-    return true;
+    passed = true;
   }
+  catch(e){
+    throw new Error("External JavaScript file failed to load properly.");
+  }
+  return passed;
+}
 
 
-  // Push Jaz onto the global scope
-  window.Jaz = Jaz;
+// Push Jaz onto the global scope
+window.Jaz = Jaz;
