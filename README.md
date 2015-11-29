@@ -52,3 +52,8 @@ J.listen();
 While Jaz by itself is a standalone software, some tools and utilities are used for building and testing purposes. All of the required files are located in the `/test` directory for testing. Any dependencies will already be integrated into the test code, but for reference and documentation they will be listed below:
 ##### Dependencies
  - RequireJS - http://requirejs.org/
+
+## License
+[MIT](https://opensource.org/licenses/MIT)
+
+Copyright (c) 2015 Nick Zuber
