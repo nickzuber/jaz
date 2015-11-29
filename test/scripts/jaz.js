@@ -120,42 +120,50 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
   }
 
   Jaz.prototype.continueProcess = function(e, target){
+
+    try{
+      console.log(e);
+    }
+    catch(e){
+      console.log('Could not resolve link.');
+    }
+
     // Update current page state (@via history API)
     window.history.pushState({}, '', target);
 
-    // href string value
-    var request;
+    // http request object
+    var http_request;
 
     console.log('Route path: ' + target);
 
     if(window.XMLHttpRequest){
-      request = new XMLHttpRequest();
+      http_request = new XMLHttpRequest();
     }else{
-      request = new ActiveXObject("Microsoft.XMLHTTP");
+      http_request = new ActiveXObject("Microsoft.XMLHTTP");
     }
 
     // Open request
-    request.open("GET", target, true);
+    http_request.open("GET", target, true);
 
-    request.onreadystatechange = function(){
-      if(request.readyState == XMLHttpRequest.DONE){
-        if(request.status == 200){
+    http_request.onreadystatechange = function(){
+      if(http_request.readyState == XMLHttpRequest.DONE){
+        if(http_request.status == 200){
           
           // Parse loaded HTML and repopulate targetArea
           // Rerender HTML and finish processes
-          this.parseHTML(request.responseText);
+          this.parseHTML(http_request.responseText);
         }
         else{
           // Fall back to default routing
           window.location = target;
-          throw new Error("AJAX load failed: invalid status returned: " + request.status);
+          throw new Error("AJAX load failed: invalid status returned: " + http_request.status);
         }
       }
     }.bind(this);
 
     // Attempt to invoke request
     try{
-      request.send();
+      http_request.send();
     }
     catch(e){
       console.warn("Error: Connection refused.\nFall back initiated.");
@@ -215,10 +223,10 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
           passed = true;
         }
         catch(e){
-          throw new Error('Failure to render internal script: ' + e.getMessage);
+          throw new Error('Failure to render internal script: ' + e.message);
         }
         if(passed){
-          fulfill(console.log('Internal script fulfilled.'));
+          fulfill();
         }else{
           reject(new Error("Internal script tag failed to render correctly."));
         }
@@ -229,7 +237,7 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
     renderedExternalScripts.map(function(script){
       allPromises.push(new Promise(function(fulfill, reject){
         if(renderExternalScript(script.src)){
-          fulfill(console.log('External script fulfilled.'));
+          fulfill();
         }else{
           reject(new Error("External script tag failed to render correctly."));
         }
@@ -237,7 +245,6 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
     });
 
     Promise.all(allPromises).then(function(){
-      console.log('Fulfilled all promises.');
       this.completeProcess();
     }.bind(this), function(){
       throw new Error('Some error occurred while attemping to render scripts.');

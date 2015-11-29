@@ -60,10 +60,10 @@ define([], function(){
         try{
           this.loading();
           setTimeout(function(){
-            fulfill(console.log('Intermission loading fired correctly.'));
+            fulfill();
           }, _delay);
         }catch(e){
-          reject(new Error("Intermission loading function was recjected.\nPerhaps the loading function given itself throws an error; check your loading function.\nError: " + e.getMessage));
+          reject(new Error("Intermission loading function was recjected.\nPerhaps the loading function given itself throws an error; check your loading function.\nError: " + e.message));
         }
       }.bind(this));
       load.then(callback);
