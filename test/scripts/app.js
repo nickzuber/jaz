@@ -54,4 +54,13 @@ require(['Jaz'], function(Jaz){
 
   J.listen();
 
+  /*
+    NOTES
+    
+     - update the page <title></title>
+     - (maybe) have a flag set to decide if dev wants to refresh <head></head>
+    
+    
+  */
+
 });
