@@ -1,12 +1,14 @@
 # Jaz.js
 
-[Visit the live demo site](https://github.com/nickzuber)
+~~[Visit the live demo site](https://github.com/nickzuber/)~~ | ~~[Visit my personal website](http://nickzuber.com/)~~
 
 Jaz provides websites with the power and behavoir of a [SPA](https://msdn.microsoft.com/en-us/magazine/dn463786.aspx) but with the traditional structure of an average website. While Jaz works optimally with a homogeneous web structure, it can be applied in any situation. 
 
 ---
 
 *Important to note that Jaz.js is still in Alpha and is not intended for production yet.*
+
+*To view the demo, clone the `test/` folder; all of the demo testing files are in there.*
 
 ---
 
