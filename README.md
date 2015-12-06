@@ -1,4 +1,15 @@
-# Jaz
+# Jaz.js
+
+[Visit the live demo site](https://github.com/nickzuber)
+
+Jaz provides websites with the power and behavoir of a [SPA](https://msdn.microsoft.com/en-us/magazine/dn463786.aspx) but with the traditional structure of an average website. While Jaz works optimally with a homogeneous web structure, it can be applied in any situation. 
+
+---
+
+*Important to note that Jaz.js is still in Alpha and is not intended for production yet.*
+
+---
+
 ## Description
 Load and render web pages through the use of history API and AJAX to
 provide a seamless and smooth transition. Jaz takes predetermined
