@@ -119,6 +119,12 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
     }.bind(this), this.delay);
   }
 
+  /**
+   * Continuing the process of creating an http request to fetch
+   * the target page and parse its data.
+   * @param {e} object, reference to the link that is clicked
+   * @param {target} string, the address of our target destination
+   */
   Jaz.prototype.continueProcess = function(e, target){
 
     try{
@@ -128,7 +134,7 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
       console.log('Could not resolve link.');
     }
 
-    // Update current page state (@via history API)
+    // Update current page state
     window.history.pushState({}, '', target);
 
     // http request object
@@ -200,6 +206,9 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
     // Inject targetArea with new content
     document.querySelector(this.targetArea.identifier()).innerHTML = renderedData.innerHTML;
 
+    // Update the page title
+    document.querySelector('title').innerHTML = DOM.querySelector('title').innerHTML;
+
     // Fix any JavaScript in newly rendered content
     var renderedInternalScripts = [];
     var renderedExternalScripts = [];
@@ -259,10 +268,8 @@ define(['Status', 'Scope', 'Intermission', 'Target'], function(Status, Scope, In
   Jaz.prototype.completeProcess = function(){
     // Fire callback
     this.intermission.done();
-
     // Reset link event listeners to compensate for newly loaded links
     this.remoteBlockRouting();
-
     // Reset status
     this.status.inProcess = false;
   };

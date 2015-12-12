@@ -25,21 +25,13 @@ require(['Jaz'], function(Jaz){
   }
 
   function loadingFunction(){
-    if(!document.querySelector('.waiting')){
-      var waiting = document.createElement('div');
-      waiting.className = 'waiting';
-      document.body.appendChild(waiting);
-      document.querySelector('#nav-header').innerHTML = '<img src="img/loading.gif" style="opacity:.25;" height="50px" />';
-      updateColor();
-    }
+    document.querySelector("body").style.opacity = '0';
+    //updateColor();
   }
 
   function loadedFunction(){
-    if(document.querySelector('.waiting')){
-      document.querySelector('.waiting').remove();
-      document.querySelector('#nav-header').innerHTML = 'Home';
-      addHandlers();
-    }
+    document.querySelector("body").style.opacity = '1';
+    //addHandlers();
   }
 
   J.config({
@@ -49,7 +41,7 @@ require(['Jaz'], function(Jaz){
       callback: loadedFunction
     },
     delay: 500,
-    targetArea: ".action-panel-main"
+    targetArea: "body"
   });
 
   J.listen();
