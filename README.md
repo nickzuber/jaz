@@ -31,8 +31,6 @@ Simply include the jaz production file on your webpage (preferably all webpages)
 <script type="text/javascript" src="scripts/jaz.min.js"></script>
 ```
 
-*Jaz is currently not available as an npm package until an official release is made.*
-
 ## Configuration
 Next, you need to instantiate a Jaz object
 ```javascript
