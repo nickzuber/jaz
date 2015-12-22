@@ -1,7 +1,5 @@
 # [Jaz.js](https://github.com/nickzuber/jaz/)
 
-~~[Visit the live demo site](https://github.com/nickzuber/)~~ | ~~[Visit my personal website](http://nickzuber.com/)~~
-
 Jaz provides websites with the power and behavoir of a [SPA](https://msdn.microsoft.com/en-us/magazine/dn463786.aspx) but with the traditional structure of an average website. While Jaz works optimally with a homogeneous web structure, it can be applied in any situation. 
 
 ---
