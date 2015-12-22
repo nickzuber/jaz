@@ -1,4 +1,4 @@
-# Jaz.js
+# [Jaz.js](https://github.com/nickzuber/jaz/)
 
 ~~[Visit the live demo site](https://github.com/nickzuber/)~~ | ~~[Visit my personal website](http://nickzuber.com/)~~
 
